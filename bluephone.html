@@ -44,6 +44,9 @@
                 <td>
                     <strong>Calls Answered</strong>
                 </td>
+                <td>
+                    <strong>Delete</strong>
+                </td>
             </tr>
             {{#each agent}} {{> agentLine}} {{/each}}
             <form><tr>
@@ -72,6 +75,7 @@
             <input type="checkbox" {{ renderChecked }} name="{{_id}}" id="{{_id}}">
         </td>
         <td>{{ calls }}</td>
+        <td><a href="#delete_{{ _id }}" id="{{ _id }}" name="delete">x</a></td>
     </tr>
 </template>
 

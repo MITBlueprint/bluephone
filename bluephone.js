@@ -4,8 +4,9 @@ if (Meteor.isClient) {
     // Template.hello.greeting = function () {
     //   return "Welcome to bluephone.";
     // };
-
-    // $("#phone").mask("999.999.9999");
+    Template.portal.rendered = function(){
+        $("#phone").mask("?999.999.9999");
+    }
 
     Template.portal.helpers({
         agent: function() {
@@ -26,12 +27,26 @@ if (Meteor.isClient) {
         'submit form': function(e) {
             e.preventDefault();
 
+            var nameVal = $('#name').val();
+            var phoneVal = $('#phone').val()
+
+            if (nameVal.length < 1){
+                return;
+            }
+
+            if (phoneVal.length < 12){
+                return;
+            }
+
             Agents.insert({
-                name: $('#name').val(),
-                phone: $('#phone').val(),
+                name: nameVal,
+                phone: phoneVal,
                 enabled: true,
                 calls: 0
             });
+
+            $('#name').val("");
+            $('#phone').val("");
         },
         'click input[type=checkbox]': function(e) {
             var id = e.target.id;
@@ -46,6 +61,14 @@ if (Meteor.isClient) {
             
             // console.log(Agents.findOne({ _id: id }));
 
+        },
+
+        'click a[name=delete]': function(e) {
+            var id = e.target.id;
+            Agents.remove({
+                _id: id
+            });
+            
         }
 
     });
@@ -53,20 +76,18 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-    Meteor.startup(function() {
-        if (Agents.find().count() === 0) {
-            Agents.insert({
-                name: 'Michael Holachek',
-                phone: '703.400.7339',
-                enabled: true,
-                calls: 0
-            });
-            Agents.insert({
-                name: 'Nalini Singh',
-                phone: '571.344.4592',
-                enabled: true,
-                calls: 0
-            });
-        }
-    });
+    if (Agents.find().count() === 0) {
+        Agents.insert({
+            name: 'Michael Holachek',
+            phone: '703.400.7339',
+            enabled: true,
+            calls: 0
+        });
+        Agents.insert({
+            name: 'Nalini Singh',
+            phone: '571.344.4592',
+            enabled: true,
+            calls: 0
+        });
+    }
 }
