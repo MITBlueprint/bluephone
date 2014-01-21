@@ -1,0 +1,10 @@
+{
+  "packages": {
+    "bootstrap-3": {},
+    "bootswatch-yeti": {},
+    "moment": {},
+    "twilio-meteor": {},
+    "iron-router": {},
+    "maskedInput": {}
+  }
+}
