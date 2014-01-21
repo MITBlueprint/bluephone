@@ -13,18 +13,28 @@
             <h1>Blueprint Phone Portal &nbsp;
                 <span class="label label-primary">224.900.BLUE</span>
             </h1>
+            <div class="pull-right">{{ loginButtons }}</div>
         </div>
-        <p class="lead">Phone numbers on this page will be forwarded calls to the Blueprint phone hotline on a round robin basis. If you don't pick up within 4 rings it will go to someone else.
-        </p>
+        <div class="row">
+            <div class="col-md-6 col-sm-5">
+                Switchboard currently
+                <h3 style="display:inline-block">
+                    <a href="#" id="toggleActive"><span class="label {{ portalColor }}">{{ portalState }}</span></a>
+                </h3>
+            </div>
+            <div class="col-md-6 col-sm-7">
+                <p>The phone number above will forward calls to the listed answerers below on a round robin basis. If you don't pick up within 4 rings the call will go to someone else.
+                </p>
+            </div>
+        </div>
+
+        <hr>
 
         <div class="row">
+            <div class="col-md-12 col-sm-12">Call dashboard stats:</div>
             <div class="col-md-4 col-sm-6">
                 <p>
-                    <h2>2</h2>current calls</p>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <p>
-                    <h2>48</h2>total calls</p>
+                    <h2>{{ totalCalls }}</h2>total calls</p>
             </div>
         </div>
 
@@ -42,26 +52,27 @@
                     <strong>Accepting Calls?</strong>
                 </td>
                 <td>
-                    <strong>Calls Answered</strong>
+                    <strong>Calls Routed</strong>
                 </td>
                 <td>
                     <strong>Delete</strong>
                 </td>
             </tr>
             {{#each agent}} {{> agentLine}} {{/each}}
-            <form><tr>
-                <td>
-                    <input type="text" placeholder="Bob Smith" id="name" name="name">
-                </td>
-                <td>
-                    <input type="phone" placeholder="703.123.4567" id="phone" name="phone">
-                </td>
-                <td class="colspan-2">
-                    <input type="submit" value="Add my number">
-                </td>
-            </tr></form>
+            <form>
+                <tr>
+                    <td>
+                        <input type="text" placeholder="Bob Smith" id="name" name="name">
+                    </td>
+                    <td>
+                        <input type="phone" placeholder="703.123.4567" id="phone" name="phone">
+                    </td>
+                    <td class="colspan-2">
+                        <input type="submit" value="Add my number">
+                    </td>
+                </tr>
+            </form>
         </table>
-
 
     </div>
 
@@ -75,7 +86,8 @@
             <input type="checkbox" {{ renderChecked }} name="{{_id}}" id="{{_id}}">
         </td>
         <td>{{ calls }}</td>
-        <td><a href="#delete_{{ _id }}" id="{{ _id }}" name="delete">x</a></td>
+        <td><a href="#delete_{{ _id }}" id="{{ _id }}" name="delete">x</a>
+        </td>
     </tr>
 </template>
 

@@ -1,25 +1,57 @@
 Agents = new Meteor.Collection('agents');
+Settings = new Meteor.Collection('settings');
 
 if (Meteor.isClient) {
     // Template.hello.greeting = function () {
     //   return "Welcome to bluephone.";
     // };
-    Template.portal.rendered = function(){
+
+    Template.portal.rendered = function() {
         $("#phone").mask("?999.999.9999");
     }
 
     Template.portal.helpers({
+        totalCalls: function() {
+            var calls = 0;
+            total = _.reduce(_.map(Agents.find({}).fetch(),
+                    function(doc) {
+                        //map
+                        return doc.calls
+                    }),
+                function(memo, num) {
+                    //reduce
+                    return memo + num;
+                });
+            return total;
+        },
         agent: function() {
             return Agents.find();
+        },
+        portalState: function() {
+            if (Settings.findOne({
+                switchboardEnabled: true
+            })) {
+                return "ACTIVE";
+            } else {
+                return "DISABLED"
+            }
+        },
+        portalColor: function() {
+            if (Settings.findOne({
+                switchboardEnabled: true
+            })) {
+                return "label-danger";
+            } else {
+                return "label-default";
+            }
         }
     });
 
     Template.agentLine.helpers({
-       renderChecked: function() {
-          if (this.enabled) {
-            console.log('enabled');
-            return 'checked';
-          }
+        renderChecked: function() {
+            if (this.enabled) {
+                return 'checked';
+            }
         }
     });
 
@@ -30,11 +62,11 @@ if (Meteor.isClient) {
             var nameVal = $('#name').val();
             var phoneVal = $('#phone').val()
 
-            if (nameVal.length < 1){
+            if (nameVal.length < 1) {
                 return;
             }
 
-            if (phoneVal.length < 12){
+            if (phoneVal.length < 12) {
                 return;
             }
 
@@ -58,7 +90,15 @@ if (Meteor.isClient) {
                     enabled: checkState
                 }
             });
-            
+
+            if (!Agents.findOne({
+                    enabled: true
+                })) {
+
+                $('a#toggleActive').click();
+
+            }
+
             // console.log(Agents.findOne({ _id: id }));
 
         },
@@ -68,26 +108,107 @@ if (Meteor.isClient) {
             Agents.remove({
                 _id: id
             });
-            
-        }
 
+        },
+        'click a#toggleActive': function() {
+            var currentStatus = Settings.findOne({
+                settings: "master"
+            });
+
+            var newState = !currentStatus.switchboardEnabled
+
+            if (newState) {
+                if (Agents.findOne({
+                    enabled: true
+                })) {
+                    Settings.update({
+                        _id: currentStatus._id
+                    }, {
+                        $set: {
+                            switchboardEnabled: newState
+                        }
+                    });
+
+                    var tone = new buzz.sound('Connected.mp3');
+                    tone.play();
+
+                }
+            } else {
+                Settings.update({
+                        _id: currentStatus._id
+                    }, {
+                        $set: {
+                            switchboardEnabled: newState
+                        }
+                    });
+                var tone = new buzz.sound('Disconnected.mp3');
+                tone.play();
+            }
+
+        }
     });
+
 
 }
 
+
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 if (Meteor.isServer) {
-    if (Agents.find().count() === 0) {
-        Agents.insert({
-            name: 'Michael Holachek',
-            phone: '703.400.7339',
-            enabled: true,
-            calls: 0
+
+    randomActivePhoneNumber = function() {
+        var possibleCallers = Agents.findOne({
+            enabled: true
+        }, { sort: {calls: 1}});
+        // var possibleCallersCount = possibleCallers.count();
+        // var possibleIds = new Array();
+        // for (var i=0; i<possibleCallersCount; i++){
+        //     possibleIds[i] = possibleCallers.
+        // }
+
+        // var randCaller = getRandomInt(0, possibleCallersCount);
+        var caller = possibleCallers;
+        if (caller){
+        var newCallCount = caller.calls + 1;
+        Agents.update({
+            _id: caller._id
+        }, {
+            $set: {
+                calls: newCallCount
+            }
         });
-        Agents.insert({
-            name: 'Nalini Singh',
-            phone: '571.344.4592',
-            enabled: true,
-            calls: 0
-        });
+        return caller.phone.replace(/\D/g, '');
+    } else {
+        return false;
     }
+    };
+
+    Meteor.startup(function() {
+
+        if (Settings.find().count() != 0) {
+            Settings.remove({});
+        }
+
+        Settings.insert({
+            settings: "master",
+            switchboardEnabled: false
+        });
+
+        if (Agents.find().count() === 0) {
+            Agents.insert({
+                name: 'Michael Holachek',
+                phone: '703.400.7339',
+                enabled: true,
+                calls: 0
+            });
+            Agents.insert({
+                name: 'Nalini Singh',
+                phone: '571.344.4592',
+                enabled: true,
+                calls: 0
+            });
+        }
+    });
 }

@@ -5,6 +5,7 @@
     "moment": {},
     "twilio-meteor": {},
     "iron-router": {},
-    "maskedInput": {}
+    "accounts-ui-bootstrap-3": {},
+    "buzz.js": {}
   }
 }

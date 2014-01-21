@@ -1,1 +1,7 @@
 /* CSS declarations go here */
+#toggleActive:hover {
+	text-decoration: none;
+}
+#toggleActive:hover .label-danger {
+	background-color: #ff411e;
+}
