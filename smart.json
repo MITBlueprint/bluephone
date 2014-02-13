@@ -5,7 +5,6 @@
     "moment": {},
     "twilio-meteor": {},
     "iron-router": {},
-    "accounts-ui-bootstrap-3": {},
     "buzz.js": {}
   }
 }

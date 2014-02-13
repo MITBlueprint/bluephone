@@ -8,20 +8,15 @@ if (Meteor.isClient) {
 
     Template.portal.rendered = function() {
         $("#phone").mask("?999.999.9999");
+
+        var settingsmaster = Settings.findOne({ settings: 'master' });
+        
     }
 
     Template.portal.helpers({
         totalCalls: function() {
             var calls = 0;
-            total = _.reduce(_.map(Agents.find({}).fetch(),
-                    function(doc) {
-                        //map
-                        return doc.calls
-                    }),
-                function(memo, num) {
-                    //reduce
-                    return memo + num;
-                });
+            var total = "NaN";
             return total;
         },
         agent: function() {
@@ -100,6 +95,12 @@ if (Meteor.isClient) {
             }
 
             // console.log(Agents.findOne({ _id: id }));
+
+        },
+
+        'click a#resetStats': function(){
+
+            Meteor.call('resetStats');
 
         },
 
