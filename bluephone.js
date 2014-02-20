@@ -153,37 +153,28 @@ if (Meteor.isClient) {
 }
 
 
-function getRandomInt (min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 if (Meteor.isServer) {
 
-    randomActivePhoneNumber = function() {
+    activePhoneNumbers = function() {
         var possibleCallers = Agents.findOne({
             enabled: true
         }, { sort: {calls: 1}});
-        // var possibleCallersCount = possibleCallers.count();
-        // var possibleIds = new Array();
-        // for (var i=0; i<possibleCallersCount; i++){
-        //     possibleIds[i] = possibleCallers.
-        // }
 
-        // var randCaller = getRandomInt(0, possibleCallersCount);
-        var caller = possibleCallers;
-        if (caller){
-        var newCallCount = caller.calls + 1;
-        Agents.update({
-            _id: caller._id
-        }, {
-            $set: {
-                calls: newCallCount
-            }
-        });
-        return caller.phone.replace(/\D/g, '');
-    } else {
-        return false;
-    }
+        return possibleCallers.phone.replace(/\D/g, '');
+        // var callers = possibleCallers;
+        // if (caller){
+        // var newCallCount = caller.calls + 1;
+        // Agents.update({
+        //     _id: caller._id
+        // }, {
+        //     $set: {
+        //         calls: newCallCount
+        //     }
+        // });
+        // return caller.phone.replace(/\D/g, '');
+    // } else {
+    //     return false;
+    // }
     };
 
     Meteor.startup(function() {
